@@ -4,7 +4,7 @@ Arduino based Boot Control
 An Ardunio System used to control the mechanical system of a car boot amplifier rack
 Inludes
 * Air Vent on rear parcel shelf 
-** Controlled Via Proximity sensor based switch, Temperature sensor, signal input (Button or Remote trigger) 
+  * Controlled Via Proximity sensor based switch, Temperature sensor, signal input (Button or Remote trigger) 
 
 # Hardware
 Currently using the following: 

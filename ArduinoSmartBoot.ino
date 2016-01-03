@@ -61,6 +61,7 @@ long buttPrevTime = 0;
 String doorTempResult = "CLOSED";
 String doorProxResult = "CLOSED"; 
 String doorResult = "CLOSED";
+
 String doorState = "CLOSED";
 
 // Time Control

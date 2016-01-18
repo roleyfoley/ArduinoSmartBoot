@@ -70,11 +70,7 @@ unsigned long tempPrevTime = 0;
 void setup() {
 
 // Serial Debug
-/*
 Serial.begin(9600);
-while (! Serial); // Wait until Serial is ready - Leonardo
-Serial.println("SmartDoor");
-*/
 
 // Startup Servo
 doorServo.attach(servoPin);
@@ -103,6 +99,8 @@ unsigned long currentMillis = millis();
 if (currentMillis - tempPrevTime >= tempDelay) {
         tempPrevTime = currentMillis;
         unsigned int temp = analogRead(tempPin);
+        Serial.println("Temperature: ");
+        Serial.println(temp);
         if (temp < tempTrigger) {
           doorTempResult = "OPEN";
         }

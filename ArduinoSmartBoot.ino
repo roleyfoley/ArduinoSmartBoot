@@ -71,6 +71,7 @@ void setup() {
 
 // Serial Debug
 Serial.begin(9600);
+Serial.println("SmartBoot");
 
 // Startup Servo
 doorServo.attach(servoPin);

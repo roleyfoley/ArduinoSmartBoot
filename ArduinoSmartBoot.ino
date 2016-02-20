@@ -8,14 +8,15 @@
 Servo doorServo;
 const unsigned int servoPin = 10;
 
-// Proximity and Ambient Light Sensor Setup - Sensor (https://www.adafruit.com/products/466) 
+// Digital Sensor Setup  - 
+// Proximity Sensor (https://www.adafruit.com/products/466)
+// Temp Sensor (https://www.adafruit.com/products/2635)  
 #include <Wire.h>
 #include <Adafruit_VCNL4010.h>
+#include <Adafruit_HDC1000.h>
 
 Adafruit_VCNL4010 vcnl; 
-
-// Temp Sensor - Analog Sensor
-const unsigned int tempPin = 1;
+Adafruit_HDC1000 hdc = Adafruit_HDC1000();
 
 // Button - Standard Button working with the Prox
 const unsigned int buttPin = 2;
@@ -42,16 +43,16 @@ const unsigned int posClosed = 110;
 const unsigned long posDelay = 15;
 
 // -- Temp --  
-// Temperature Reading runs opposite to value - 1023 = -55c, 0 = 125c) (475 = ~28c) 
+// - All Temp readings are in degress celcius 
 // Temp required for door to open
-const unsigned int tempTrigger = 200;
+const unsigned int tempTrigger = 42;
 // Temp requried for door to close (make it cooler than the trigger to prevent flapping) 
-const unsigned int tempTriggerClose = tempTrigger + 50;
+const unsigned int tempTriggerClose = tempTrigger - 4;
 // A delay (ms) to reduce flapping again 
 const unsigned long tempDelay = 5000; 
 
-// ** Running Variables **
 
+// ** Running Variables **
 String proxSwitch = "OFF"; 
 
 int buttSwitch; 
@@ -67,6 +68,7 @@ String doorState = "CLOSED";
 // Time Control
 unsigned long tempPrevTime = 0;
 
+// ** Script Start ** 
 void setup() {
 
 // Serial Debug
@@ -78,6 +80,9 @@ doorServo.attach(servoPin);
 
 // Prox Setup
 vcnl.begin(); 
+
+// Temp Setup
+hdc.begin();
 
 // Button Setup 
 pinMode(buttPin, INPUT);
@@ -99,13 +104,13 @@ unsigned long currentMillis = millis();
 // Check the Temperature every tempDelay - prevents the sensor being too sensitive
 if (currentMillis - tempPrevTime >= tempDelay) {
         tempPrevTime = currentMillis;
-        unsigned int temp = analogRead(tempPin);
+        int temp = hdc.readTemperature();
         Serial.println("Temperature: ");
         Serial.println(temp);
-        if (temp < tempTrigger) {
+        if (temp > tempTrigger) {
           doorTempResult = "OPEN";
         }
-        else if ( temp > tempTriggerClose) {
+        else if ( temp < tempTriggerClose) {
           doorTempResult = "CLOSED";
         }
 
@@ -194,6 +199,7 @@ if ( doorTempResult == "CLOSED" && doorProxResult == "CLOSED") {
 // Nice Sweep open prevents doors breaking... 
 if ( doorResult != doorState ) {
     if (doorResult == "OPEN") {
+      Serial.println("Opening the door");
         for (int posCurrent = posClosed; posCurrent >= posOpen; posCurrent--){
           doorServo.write(posCurrent);
           delay(posDelay);
@@ -202,6 +208,7 @@ if ( doorResult != doorState ) {
 
     }
     if (doorResult == "CLOSED") {
+      Serial.println("Closing the door");
         digitalWrite(ledPin, LOW);
         for (int posCurrent = posOpen; posCurrent <= posClosed; posCurrent++){
           doorServo.write(posCurrent);

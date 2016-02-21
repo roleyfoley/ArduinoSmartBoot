@@ -12,11 +12,11 @@ const unsigned int servoPin = 10;
 // Proximity Sensor (https://www.adafruit.com/products/466)
 // Temp Sensor (https://www.adafruit.com/products/2635)  
 #include <Wire.h>
-#include <Adafruit_VCNL4010.h>
+#include <Adafruit_vcnl4010.h>
 #include <Adafruit_HDC1000.h>
 
-Adafruit_VCNL4010 vcnl; 
-Adafruit_HDC1000 hdc = Adafruit_HDC1000();
+Adafruit_VCNL4010 doorProxSensor; 
+Adafruit_HDC1000 doorHeatSensor = Adafruit_HDC1000();
 
 // Button - Standard Button working with the Prox
 const unsigned int buttPin = 2;
@@ -45,7 +45,7 @@ const unsigned long posDelay = 15;
 // -- Temp --  
 // - All Temp readings are in degress celcius 
 // Temp required for door to open
-const unsigned int tempTrigger = 42;
+const unsigned int tempTrigger = 40;
 // Temp requried for door to close (make it cooler than the trigger to prevent flapping) 
 const unsigned int tempTriggerClose = tempTrigger - 4;
 // A delay (ms) to reduce flapping again 
@@ -79,10 +79,10 @@ Serial.println("SmartBoot");
 doorServo.attach(servoPin);
 
 // Prox Setup
-vcnl.begin(); 
+doorProxSensor.begin(); 
 
 // Temp Setup
-hdc.begin();
+doorHeatSensor.begin();
 
 // Button Setup 
 pinMode(buttPin, INPUT);
@@ -104,9 +104,8 @@ unsigned long currentMillis = millis();
 // Check the Temperature every tempDelay - prevents the sensor being too sensitive
 if (currentMillis - tempPrevTime >= tempDelay) {
         tempPrevTime = currentMillis;
-        int temp = hdc.readTemperature();
-        Serial.println("Temperature: ");
-        Serial.println(temp);
+        int temp = doorHeatSensor.readTemperature();
+        Serial.print("Temperature: "); Serial.println(temp);
         if (temp > tempTrigger) {
           doorTempResult = "OPEN";
         }
@@ -120,12 +119,12 @@ if (currentMillis - tempPrevTime >= tempDelay) {
 // Using a Proximity sensor as a trigger Switch. Holding your hand over it triggers a state change. 
 // The object in front must be removed then held over again to trigger the action again.
 
-unsigned int proxCurrent = vcnl.readProximity();
+unsigned int proxCurrent = doorProxSensor.readProximity();
 
 if ( proxCurrent > proxTrigger) {
     
     delay(proxTriggerDelay);     
-    unsigned int proxDelay = vcnl.readProximity();
+    unsigned int proxDelay = doorProxSensor.readProximity();
     
     if (proxDelay >= proxTriggerDelay) {
          if (proxSwitch == "OFF") {
@@ -143,7 +142,7 @@ if ( proxCurrent > proxTrigger) {
 // Once the object is removed wait a little bit then reset the switch.
 if (proxCurrent < proxTrigger ) {
     delay(proxTriggerDelay);
-    unsigned int proxDelay =  vcnl.readProximity();
+    unsigned int proxDelay =  doorProxSensor.readProximity();
 
     if (proxDelay <= proxTrigger) {
       if (proxSwitch == "ON") {

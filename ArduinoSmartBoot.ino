@@ -1,6 +1,6 @@
-// SmartDoor  
+// SmartBoot
 // Allows for the control of a Door (via servo) based on a proximity based switch or ambient temperature 
-// Written By Michael Foley - 03/01/2016 - e:roleyfoley@gmail.com
+// Written By Michael Foley - e:roleyfoley@gmail.com
 
 // ** Hardware Configuration ** 
 //Servo

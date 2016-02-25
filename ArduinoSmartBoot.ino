@@ -45,9 +45,9 @@ const unsigned long posDelay = 15;
 // -- Temp --  
 // - All Temp readings are in degress celcius 
 // Temp required for door to open
-const unsigned int tempTrigger = 40;
+const unsigned int tempTrigger = 50;
 // Temp requried for door to close (make it cooler than the trigger to prevent flapping) 
-const unsigned int tempTriggerClose = tempTrigger - 4;
+const unsigned int tempTriggerClose = 35;
 // A delay (ms) to reduce flapping again 
 const unsigned long tempDelay = 5000; 
 

@@ -12,7 +12,7 @@ const unsigned int servoPin = 10;
 // Proximity Sensor (https://www.adafruit.com/products/466)
 // Temp Sensor (https://www.adafruit.com/products/2635)  
 #include <Wire.h>
-#include <Adafruit_vcnl4010.h>
+#include <Adafruit_VCNL4010.h>
 #include <Adafruit_HDC1000.h>
 
 Adafruit_VCNL4010 doorProxSensor; 

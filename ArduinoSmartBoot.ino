@@ -22,6 +22,9 @@ Adafruit_HDC1000 doorHeatSensor = Adafruit_HDC1000(1);
 
 // ic2 Multiplexer - Allows for multiple temp sensors
 #define proxMulti  0x70
+const unsigned int multiProxDoorID =1;
+const unsigned int multiProxAmpID = 2;
+
 
 // Button - Standard Button working with the Prox
 const unsigned int buttPin = 2;
@@ -73,6 +76,16 @@ String doorState = "CLOSED";
 // Time Control
 unsigned long tempPrevTime = 0;
 
+// Control the multiplexer 
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+ 
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();  
+}
+
+
 // ** Script Start ** 
 void setup() {
 
@@ -84,6 +97,7 @@ Serial.println("SmartBoot");
 doorServo.attach(servoPin);
 
 // Prox Setup
+tcaselect(multiProxDoorID);
 doorProxSensor.begin(); 
 
 // Temp Setup
@@ -96,14 +110,6 @@ pinMode(buttPin, INPUT);
 pinMode(ledPin, OUTPUT);
 }
 
-// Control the multiplexer 
-void tcaselect(uint8_t i) {
-  if (i > 7) return;
- 
-  Wire.beginTransmission(TCAADDR);
-  Wire.write(1 << i);
-  Wire.endTransmission();  
-}
 
 void loop() {
 // Time Control - Set Current Time
@@ -133,11 +139,13 @@ if (currentMillis - tempPrevTime >= tempDelay) {
 // Using a Proximity sensor as a trigger Switch. Holding your hand over it triggers a state change. 
 // The object in front must be removed then held over again to trigger the action again.
 
+tcaselect(multiProxDoorID);
 unsigned int proxCurrent = doorProxSensor.readProximity();
 
 if ( proxCurrent > proxTrigger) {
     
-    delay(proxTriggerDelay);     
+    delay(proxTriggerDelay);
+    tcaselect(multiProxDoorID);     
     unsigned int proxDelay = doorProxSensor.readProximity();
     
     if (proxDelay >= proxTriggerDelay) {
@@ -156,6 +164,7 @@ if ( proxCurrent > proxTrigger) {
 // Once the object is removed wait a little bit then reset the switch.
 if (proxCurrent < proxTrigger ) {
     delay(proxTriggerDelay);
+    tcaselect(multiProxDoorID);
     unsigned int proxDelay =  doorProxSensor.readProximity();
 
     if (proxDelay <= proxTrigger) {

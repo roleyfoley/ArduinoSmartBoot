@@ -85,7 +85,6 @@ void tcaselect(uint8_t i) {
   Wire.endTransmission();  
 }
 
-
 // ** Script Start ** 
 void setup() {
 

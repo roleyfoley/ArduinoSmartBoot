@@ -16,13 +16,13 @@ const unsigned int servoPin = 10;
 #include <Adafruit_VCNL4010.h>
 #include <Adafruit_HDC1000.h>
 
-Adafruit_VCNL4010 doorProxSensor = Adafruit_VCNL4010(1);
-Adafruit_VCNL4010 ampProxSensor = Adafruit_VCNL4010(2);
-Adafruit_HDC1000 doorHeatSensor = Adafruit_HDC1000(1);
+Adafruit_VCNL4010 doorProxSensor; 
+Adafruit_VCNL4010 ampProxSensor;
+Adafruit_HDC1000 doorHeatSensor = Adafruit_HDC1000();
 
 // ic2 Multiplexer - Allows for multiple temp sensors
 #define proxMulti  0x70
-const unsigned int multiProxDoorID =1;
+const unsigned int multiProxDoorID = 1;
 const unsigned int multiProxAmpID = 2;
 
 
@@ -80,7 +80,7 @@ unsigned long tempPrevTime = 0;
 void tcaselect(uint8_t i) {
   if (i > 7) return;
  
-  Wire.beginTransmission(TCAADDR);
+  Wire.beginTransmission(proxMulti);
   Wire.write(1 << i);
   Wire.endTransmission();  
 }

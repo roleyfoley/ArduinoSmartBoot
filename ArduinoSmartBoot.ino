@@ -11,12 +11,17 @@ const unsigned int servoPin = 10;
 // Digital Sensor Setup  - 
 // Proximity Sensor (https://www.adafruit.com/products/466)
 // Temp Sensor (https://www.adafruit.com/products/2635)  
+// Multiplexer (https://www.adafruit.com/product/2717)
 #include <Wire.h>
 #include <Adafruit_VCNL4010.h>
 #include <Adafruit_HDC1000.h>
 
-Adafruit_VCNL4010 doorProxSensor; 
-Adafruit_HDC1000 doorHeatSensor = Adafruit_HDC1000();
+Adafruit_VCNL4010 doorProxSensor = Adafruit_VCNL4010(1);
+Adafruit_VCNL4010 ampProxSensor = Adafruit_VCNL4010(2);
+Adafruit_HDC1000 doorHeatSensor = Adafruit_HDC1000(1);
+
+// ic2 Multiplexer - Allows for multiple temp sensors
+#define proxMulti  0x70
 
 // Button - Standard Button working with the Prox
 const unsigned int buttPin = 2;
@@ -89,6 +94,15 @@ pinMode(buttPin, INPUT);
 
 // LED Setup
 pinMode(ledPin, OUTPUT);
+}
+
+// Control the multiplexer 
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+ 
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();  
 }
 
 void loop() {
